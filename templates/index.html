@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detector de Cores IoT</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #eef2f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    #color-box {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      margin: 20px auto;
+      background-color: #ccc;
+      border: 6px solid #f0f0f0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.4s ease;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 26px;
+      margin-top: 0;
+    }
+
+    .data {
+      margin: 12px 0;
+      font-size: 16px;
+      color: #7f8c8d;
+    }
+
+    .value {
+      font-weight: bold;
+      color: #34495e;
+      font-size: 18px;
+    }
+
+    .cor-nome {
+      font-size: 34px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin: 15px 0;
+      color: #2c3e50;
+      letter-spacing: 1px;
+    }
+
+    .progresso-container {
+      width: 100%;
+      background-color: #ecf0f1;
+      border-radius: 8px;
+      margin-top: 5px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .progresso-barra {
+      height: 100%;
+      background-color: #2ecc71;
+      width: 0%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Scanner de Cores</h1>
+    <div id="color-box"></div>
+    <div class="cor-nome" id="cor-nome">Lendo...</div>
+
+    <div class="data" style="text-align: left;">
+      Confiança: <span class="value" id="confianca">0%</span>
+      <div class="progresso-container">
+        <div class="progresso-barra" id="confianca-barra"></div>
+      </div>
+    </div>
+
+    <div class="data">Distância Euclidiana: <span class="value" id="distancia">0.0000</span></div>
+    <div class="data" style="font-size: 13px; margin-top: 25px;">
+      <b>Leitura RGB Norm.:</b> <br>
+      <span id="rgb-norm">-</span>
+    </div>
+  </div>
+
+  <script>
+    // Mapeamento das cores calibradas para cores de exibição em tela (CSS HEX)
+    const colorMap = {
+      "vermelho": "#e74c3c", "verde": "#2ecc71", "azul": "#3498db",
+      "amarelo": "#f1c40f", "branco": "#ffffff", "preto": "#2c3e50", "laranja": "#e67e22"
+    };
+
+    async function fetchColor() {
+      try {
+        const response = await fetch('/api/cor');
+        const data = await response.json();
+
+        if (data.erro) {
+          document.getElementById('cor-nome').innerText = "Erro!";
+          return;
+        }
+
+        // Atualiza Textos
+        document.getElementById('cor-nome').innerText = data.cor;
+        document.getElementById('confianca').innerText = data.confianca + '%';
+        document.getElementById('distancia').innerText = data.distancia;
+
+        // Atualiza Barra de Confiança e Círculo de Cor
+        document.getElementById('confianca-barra').style.width = data.confianca + '%';
+        document.getElementById('color-box').style.backgroundColor = colorMap[data.cor.toLowerCase()] || '#cccccc';
+
+        // Atualiza RGB
+        document.getElementById('rgb-norm').innerText =
+          `R: ${data.leitura_norm.rn.toFixed(3)} | G: ${data.leitura_norm.gn.toFixed(3)} | B: ${data.leitura_norm.bn.toFixed(3)}`;
+
+      } catch (error) {
+        console.error("Erro ao comunicar com o sensor:", error);
+      }
+    }
+
+    // Configura para ler os dados do Python a cada 750 milissegundos
+    setInterval(fetchColor, 750);
+    fetchColor();
+  </script>
+</body>
+
+</html>

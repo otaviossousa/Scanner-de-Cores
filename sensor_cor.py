@@ -26,15 +26,20 @@ class SensorCor:
         }
 
     def ler_media(self, amostras=10, intervalo=0.05):
-        soma_r = soma_g = soma_b = soma_c = 0
-
+        leituras = []
         for _ in range(amostras):
-            leitura = self.ler_bruto()
-            soma_r += leitura["r"]
-            soma_g += leitura["g"]
-            soma_b += leitura["b"]
-            soma_c += leitura["c"]
+            leituras.append(self.ler_bruto())
             time.sleep(intervalo)
+
+        # Para maior precisão, descarta as leituras extremas (ruído) se houver amostras suficientes
+        if amostras >= 5:
+            leituras = sorted(leituras, key=lambda x: x["c"])[1:-1]
+            amostras = len(leituras)
+
+        soma_r = sum(l["r"] for l in leituras)
+        soma_g = sum(l["g"] for l in leituras)
+        soma_b = sum(l["b"] for l in leituras)
+        soma_c = sum(l["c"] for l in leituras)
 
         return {
             "r": soma_r / amostras,
