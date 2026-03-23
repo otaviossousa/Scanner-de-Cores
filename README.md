@@ -1,4 +1,4 @@
-# Scanner de Cor com Sensor TCS34725
+# Scanner de Cores com Sensor TCS34725
 
 > Sistema de detecção e classificação de cores em tempo real baseado em Raspberry Pi e sensor TCS34725, com interface web via Flask, suporte a calibração de cores personalizada e estimativa de código hexadecimal.
 
