@@ -104,12 +104,6 @@
   </div>
 
   <script>
-    // Mapeamento das cores calibradas para cores de exibição em tela (CSS HEX)
-    const colorMap = {
-      "vermelho": "#e74c3c", "verde": "#2ecc71", "azul": "#3498db",
-      "amarelo": "#f1c40f", "branco": "#ffffff", "preto": "#2c3e50", "laranja": "#e67e22"
-    };
-
     async function fetchColor() {
       try {
         const response = await fetch('/api/cor');

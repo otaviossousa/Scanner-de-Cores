@@ -5,23 +5,25 @@ ARQUIVO = "cores_calibradas.json"
 
 sensor = SensorCor(integration_time=100, gain=4)
 
-cores = [
-    "vermelho",
-    "verde",
-    "azul",
-    "amarelo",
-    "branco",
-    "preto",
-    "laranja"
-]
-
-dados = {}
+try:
+    # Carrega os dados existentes para não apagar o que já foi calibrado
+    with open(ARQUIVO, "r", encoding="utf-8") as f:
+        dados = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    dados = {}
 
 print("=== CALIBRACAO DE CORES ===")
 print("Mantenha sempre a mesma distancia entre o objeto e o sensor.")
 print("Evite luz ambiente variando durante a calibracao.\n")
+print("Digite 'sair' a qualquer momento para finalizar e salvar.\n")
 
-for cor in cores:
+while True:
+    cor = input("Digite o NOME da cor (ex: rosa, vermelho_escuro) ou 'sair': ").strip().lower()
+    if cor == 'sair':
+        break
+    if not cor:
+        continue
+
     input(f"Coloque a cor [{cor}] na frente do sensor e pressione ENTER... ")
 
     leitura = sensor.ler_media(amostras=20, intervalo=0.05)
